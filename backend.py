@@ -21,12 +21,13 @@ def process_teams(input_csv_path, output_csv_path):
     data = pd.read_csv(input_csv_path)
     list_csv_files = []
     likert_columns = ["Web Dev", "ML", "Mobile Dev", "Game Dev", "Data Analytics"]
-    weights = {1: 0.5, 2: 0.4, 3: 0.05, 4: 0.03, 5: 0.02}
-    probabilities = data[likert_columns].apply(lambda x: [weights[val] for val in x], axis=1)
+    weights = {1: 0.5**2, 2: 0.4**2, 3: 0.05**2, 4: 0.03**2, 5: 0.02**2}
     group_assignments = {}
 
     for idx, row in data.iterrows():
         topic_probabilities = [weights[val] for val in row[likert_columns]]
+        total = sum(topic_probabilities)
+        topic_probabilities = [p / total for p in topic_probabilities]
         user_id = row['User']
         assigned_topic_index = np.random.choice(len(topic_probabilities), p=topic_probabilities)
         assigned_topic = likert_columns[assigned_topic_index]
