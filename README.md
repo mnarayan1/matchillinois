@@ -1,3 +1,5 @@
+1st Place Dev Ada 2024
+
 # Match-Illinois
 
 Optimized team matching for CS group projects using BERTopic, Latent Dirichlet allocation (LDA), and probabilistic Likert rankings. 
