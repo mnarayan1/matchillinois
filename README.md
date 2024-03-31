@@ -1,6 +1,6 @@
 # Match-Illinois
 
-Optimized team matching for CS group projects using BERTopic, Latent Dirichlet allocation, and probabilistic Likert rankings. 
+Optimized team matching for CS group projects using BERTopic, Latent Dirichlet allocation (LDA), and probabilistic Likert rankings. 
 
 ## Try it out!
 
