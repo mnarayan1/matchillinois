@@ -1,21 +1,13 @@
-# 📦 Streamlit App Starter Kit 
-```
-⬆️ (Replace above with your app's name)
-```
+# 📦 Match-Illinois
 
-Description of the app ...
+Optimized team matching for CS group projects using BERTopic, Latent Dirichlet allocation, and probabilistic Likert rankings. 
 
-## Demo App
+## Try it out!
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ml-model-builder-template.streamlit.app/)
+[Runtime](https://matchillinois.streamlit.app/)
 
-## Section Heading
+## Input Data
 
-This is filler text, please replace this with text for this section.
+Input data as csv in the following format
 
-## Further Reading
-
-This is filler text, please replace this with a explanatory text about further relevant resources for this repo
-- Resource 1
-- Resource 2
-- Resource 3
+| user-id | (5 columns of project types) | Paragraph of Project Interests | 
