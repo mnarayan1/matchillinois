@@ -54,34 +54,34 @@ def process_teams(input_csv_path, output_csv_path):
         bertopic_topics, _ = bertopic_model.fit_transform(texts)
         data['BERTopic'] = bertopic_topics
 
-        # Filter out outliers marked with -1 by BERTopic
+        # filter out outliers marked with -1 by BERTopic
         outlier_data = data[data['BERTopic'] == -1]
         outlier_texts = outlier_data['Project Description'].tolist()
         if not outlier_texts:
-            # Sort the data by the topic
+            # sort the data by the topic
             sorted_data = data.sort_values(by='BERTopic')
             sorted_data.to_csv(f"NLP_{file_name}", index=False)
 
         else: 
-            # Preprocess and vectorize texts for LDA
+            # preprocess for LDA
             vectorizer = CountVectorizer(stop_words='english')
             X = vectorizer.fit_transform(outlier_texts)
             corpus = gensim.matutils.Sparse2Corpus(X, documents_columns=False)
             dictionary = corpora.Dictionary.from_corpus(corpus, id2word=dict((id, word) for word, id in vectorizer.vocabulary_.items()))
 
-            # Fit LDA model on the outliers
+            # fit LDA model on the outliers
             lda_model = gensim.models.LdaModel(corpus=corpus, id2word=dictionary, num_topics=5, passes=10)
             outlier_data['LDATopic'] = [max(lda_model[corpus[i]], key=lambda x: x[1])[0] for i in range(len(outlier_texts))]
 
-            # Combine the LDA topic assignments for outliers with the original dataset
+            # combine the LDA topic assignments for outliers with the og dataset
             data.loc[data['BERTopic'] == -1, 'LDATopic'] = outlier_data['LDATopic']
 
-            # Sort the data first by BERTopic (excluding -1), then by LDATopic for outliers
+            # sort the data first by BERTopic (excluding -1), then by LDATopic for outliers
             non_outlier_data = data[data['BERTopic'] != -1].sort_values(by='BERTopic')
             outlier_data_sorted = outlier_data.sort_values(by='LDATopic')
             sorted_data = pd.concat([non_outlier_data, outlier_data_sorted])
 
-            # Save the sorted data to a CSV file
+          
             sorted_data.to_csv(f"NLP_{file_name}", index=False)
         return f"NLP_{file_name}"
 
@@ -116,28 +116,21 @@ def process_teams(input_csv_path, output_csv_path):
     with open(output_csv_path, "w", newline='') as outfile:
         csv_writer = csv.writer(outfile)
         
-        # Write a header row for the whole file (this makes it clear these are data columns, not part of the data)
-        csv_writer.writerow(["Group", "Team Number", "User ID", "Project Description"])  # You can adjust these headers as needed
+        csv_writer.writerow(["Group", "Team Number", "User ID", "Project Description"]) 
 
         for file in nlp_csv_files:
-            # Extract the group name from the filename
-            group_name = file.split('_')[1]  # This gets the second word in the filename
+            group_name = file.split('_')[1]  
 
-            # Process each file for team formation
             data = pd.read_csv(file)
             grouped_lists = data.groupby('BERTopic').apply(lambda x: x['User'].tolist()).tolist()
             final_teams = create_teams(grouped_lists)
 
-            # Iterate over the teams and write their information
             for i, team in enumerate(final_teams):
                 for user in team:
                     user_data = data[data['User'] == user].iloc[0]
-                    # Include the group name in each row of data
-                    team_data = [group_name, i + 1, user, user_data['Project Description']]  # Define row data
-                    csv_writer.writerow(team_data)  # Write the row data
+                    team_data = [group_name, i + 1, user, user_data['Project Description']]  
+                    csv_writer.writerow(team_data)  
                 
-                # Optionally, you can write an empty row after each team for better readability
-                csv_writer.writerow([])  # Adds a space between teams for clarity
+                csv_writer.writerow([])  
 
-            # Write a couple of newline characters to separate each group's section
-            csv_writer.writerow([])  # Adds a space between different groups
+            csv_writer.writerow([]) 
